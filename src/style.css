@@ -1,0 +1,6 @@
+.button{
+    -fx-color-label-visible: gray;
+    -fx-border-color: black;
+    -fx-text-fill: black;
+    -fx-focus-traversable: false;
+}
