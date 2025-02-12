@@ -65,6 +65,7 @@ public class Service {
     }
 
     public static void buttonPressedLeft(EmptyButton button) {
+        button.setPrefSize(button.getPrefWidth(), button.getPrefHeight());
         if (button.getNrAdiacent() == -1) {
             buttonUpdateImage(button,"resources/images/bomb.png");
         } else {
@@ -105,10 +106,18 @@ public class Service {
         ImageView iv = new ImageView(image);
         iv.setFitHeight(button.getHeight());
         iv.setFitWidth(button.getWidth());
-        iv.setTranslateX(-7);
+        iv.setPreserveRatio(true);
+        iv.setTranslateX(-6);
         StackPane stackPane = new StackPane();
         stackPane.getChildren().add(iv);
         button.setGraphic(stackPane);
+
+        button.setPrefWidth(80);
+        button.setPrefHeight(80);
+        button.setMinWidth(80);
+        button.setMinHeight(80);
+        button.setMaxWidth(80);
+        button.setMaxHeight(80);
     }
 
     public static void bfsEmpty(EmptyButton[][] map, int i, int j) {
@@ -144,6 +153,15 @@ public class Service {
                 }
             }
 
+        }
+    }
+
+    public static void gameOver(EmptyButton[][] map) {
+        for(int i = 0; i < map.length; i++) {
+            for(int j = 0; j < map[i].length; j++) {
+                Service.buttonPressedLeft(map[i][j]);
+                map[i][j].setRevealed(true);
+            }
         }
     }
 
