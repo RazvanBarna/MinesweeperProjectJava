@@ -1,8 +1,6 @@
-package ro.minesweeper;
+package ro.minesweeper.service;
 
-import javafx.geometry.HPos;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
@@ -11,14 +9,14 @@ import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 import ro.minesweeper.buttons.BombButton;
 import ro.minesweeper.buttons.EmptyButton;
 import ro.minesweeper.buttons.NonBombButton;
-import ro.minesweeper.service.Service;
 
-public class EasyLevel extends Stage {
+public class Level extends Stage {
     private static EmptyButton[][] buttons; // 4 rows, 5 columns
     private ArrayList<EmptyButton> flags;
     private ArrayList<EmptyButton> bombs=new ArrayList<>();
@@ -26,34 +24,39 @@ public class EasyLevel extends Stage {
     private Label flagsLabel;
     private Label bombsLabel;
     private int nrFlags=0;
+    private int rows;
+    private int columns;
 
 
-    public EasyLevel() {
-        buttons = new EmptyButton[4][5];
+    public Level(int nrBombs, int rows, int columns) {
+        buttons = new EmptyButton[rows][columns];
         Random rand = new Random();
         GridPane grid = new GridPane();
         Button finishButton = new Button("Finish");
+        this.rows=rows;
+        this.columns=columns;
+        this.nrBombs=nrBombs;
 
-        flagsLabel = new Label("Flags left: 5");
-        bombsLabel = new Label("Bombs: 5");
+        flagsLabel = new Label("Flags left: "+nrBombs);
+        bombsLabel = new Label("Bombs: "+nrBombs);
         Label titleLabel = new Label("Easy Level");
         titleLabel.setStyle("-fx-font-size: 40px; -fx-font-weight: bold;");
 
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 5; j++) {
-                int randomNum = rand.nextInt(2);
-                buttons[i][j] = createRandomButton(randomNum);
-                grid.add(buttons[i][j], j, i);
-                buttons[i][j].setRow(i);
-                buttons[i][j].setCol(j);
+        flags = new ArrayList<>(nrBombs);
+        ArrayList<String> positions = new ArrayList<>();
+        for (int i=0;i<rows;i++) {
+            for (int j=0;j<columns;j++) {
+                positions.add(i+","+j);
             }
         }
+        Collections.shuffle(positions,rand);
+        this.createRandomButton(nrBombs,positions,grid);
         Service.setNrBombsAdiacent(buttons,grid);
-        flags = new ArrayList<>(nrBombs);
 
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 5; j++) {
-                buttons[i][j].setPrefSize(80, 80);
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                buttons[i][j].setPrefSize(40, 40);
                 buttons[i][j].setStyle("-fx-background-color: gray;");
 
                 EmptyButton auxButton = buttons[i][j];
@@ -99,10 +102,10 @@ public class EasyLevel extends Stage {
 
 
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < rows; i++) {
             grid.getRowConstraints().add(new javafx.scene.layout.RowConstraints());
         }
-        for (int j = 0; j < 5; j++) {
+        for (int j = 0; j < columns; j++) {
             grid.getColumnConstraints().add(new javafx.scene.layout.ColumnConstraints());
         }
 
@@ -112,7 +115,7 @@ public class EasyLevel extends Stage {
         Button restartButton = new Button("Restart");
         restartButton.setStyle("-fx-font-size: 16px; -fx-padding: 10px;");
         restartButton.setOnAction(e -> {
-            new EasyLevel();
+            new Minesweeper();
             this.close();
         });
 
@@ -136,32 +139,36 @@ public class EasyLevel extends Stage {
         mainLayout.setStyle("-fx-padding: 10px;");
         mainLayout.setAlignment(Pos.CENTER);
 
-
-        Scene scene = new Scene(mainLayout, 330, 400);
-        String css = this.getClass().getResource("/style.css").toExternalForm();
+        Scene scene = new Scene(mainLayout, 1200, 1000);
+        String css = this.getClass().getResource("/ro/minesweeper/service/style.css").toExternalForm();
         scene.getStylesheets().add(css);
         this.setScene(scene);
-        this.setTitle("Minesweeper - Easy Level");
+        this.setTitle("Minesweeper  Level");
         this.show();
     }
 
-    public EmptyButton createRandomButton(int rand) {
-        EmptyButton button;
-        switch (rand) {
-            case 0:
-                if(nrBombs<5) {
-                    button = new BombButton();
-                    nrBombs++;
-                    bombs.add(button);
-                }
-                else {
-                    button= new NonBombButton(0,"NonBomb Square");
-                }
-                break;
-            default:
-                button= new NonBombButton(0,"NonBomb Square");
+    public void createRandomButton(int nrBombs,ArrayList<String> positions,GridPane grid ) {
+        for (int i = 0; i < nrBombs; i++) {
+            String[] pos = positions.get(i).split(",");
+            int row = Integer.parseInt(pos[0]);
+            int col = Integer.parseInt(pos[1]);
+            buttons[row][col] = new BombButton();
+            buttons[row][col].getStyleClass().add("BombButton");
+            bombs.add(buttons[row][col]);
         }
-        return button;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if (buttons[i][j] == null) {
+                    buttons[i][j] = new NonBombButton(0, "NonBomb Square");
+                    buttons[i][j].getStyleClass().add("NonBombButton");
+                }
+                grid.add(buttons[i][j], j, i);
+                buttons[i][j].setRow(i);
+                buttons[i][j].setCol(j);
+            }
+
+    }
     }
 
     public void flagsWithBombs( ArrayList<EmptyButton> flags,EmptyButton button) {
@@ -170,12 +177,12 @@ public class EasyLevel extends Stage {
     }
 
     private void updateFlagsCount() {
-        flagsLabel.setText("Flags left: " + (5 - flags.size()));
+        flagsLabel.setText("Flags left: " + (nrBombs - flags.size()));
     }
 
     private void disableAllButtons() {
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 5; j++) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
                 buttons[i][j].setDisable(true);
             }
         }

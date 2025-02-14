@@ -1,0 +1,23 @@
+.button{
+    -fx-color-label-visible: gray;
+    -fx-border-color: black;
+    -fx-text-fill: black;
+    -fx-focus-traversable: false;
+    -fx-background-image: url("../../../resources/images/pressed.png");
+}
+
+.button img {
+    width: 40px;
+    height: 40px;
+}
+.BombButton {
+    -fx-text-fill: transparent;
+}
+
+.NonBombButton {
+    -fx-text-fill: transparent;
+}
+
+.EmptyButton {
+    -fx-text-fill: transparent;
+}

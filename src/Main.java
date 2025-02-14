@@ -1,12 +1,13 @@
 import javafx.application.Application;
 import javafx.stage.Stage;
-import ro.minesweeper.EasyLevel;
+import ro.minesweeper.service.Level;
+import ro.minesweeper.service.Minesweeper;
 
 public class Main extends Application {
     public static void main(String[] args){
         launch(args);
     }
     public void start(Stage primaryStage) {
-        EasyLevel easyLevel = new EasyLevel();
+       Minesweeper minesweeper = new Minesweeper();
     }
 }

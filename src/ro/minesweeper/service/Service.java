@@ -56,6 +56,7 @@ public class Service {
                 }
                 if (map[i][j].getNrAdiacent() == 0) {
                     EmptyButton emptyButton = new EmptyButton("Empty",i,j);
+                    emptyButton.getStyleClass().add("EmptyButton");
                     grid.getChildren().remove(map[i][j]);
                     grid.add(emptyButton, j, i);
                     map[i][j] = emptyButton;
@@ -112,12 +113,12 @@ public class Service {
         stackPane.getChildren().add(iv);
         button.setGraphic(stackPane);
 
-        button.setPrefWidth(80);
-        button.setPrefHeight(80);
-        button.setMinWidth(80);
-        button.setMinHeight(80);
-        button.setMaxWidth(80);
-        button.setMaxHeight(80);
+        button.setPrefWidth(40);
+        button.setPrefHeight(40);
+        button.setMinWidth(40);
+        button.setMinHeight(40);
+        button.setMaxWidth(40);
+        button.setMaxHeight(40);
     }
 
     public static void bfsEmpty(EmptyButton[][] map, int i, int j) {
